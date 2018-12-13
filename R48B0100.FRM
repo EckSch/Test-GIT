@@ -1,9 +1,9 @@
 VERSION 5.00
 Object = "{473956E6-78C8-4D4F-BDA1-9F35065342E6}#2.1#0"; "R48Checkbox.ocx"
 Object = "{DAEC4B0D-F7F9-4873-A2E2-7006412CE831}#2.0#0"; "mbaToolbar.ocx"
-Object = "{0BA686C6-F7D3-101A-993E-0000C0EF6F5E}#1.0#0"; "THREED32.OCX"
+Object = "{0BA686C6-F7D3-101A-993E-0000C0EF6F5E}#1.0#0"; "threed32.ocx"
 Object = "{6219FA60-20A6-41DD-B7F5-BE33795101DA}#1.0#0"; "R48TBox.ocx"
-Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "COMDLG32.OCX"
+Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "comdlg32.ocx"
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.2#0"; "MSCOMCTL.OCX"
 Object = "{77DDF307-D82B-4757-8B3A-106EC9D75D4B}#8.0#0"; "tdbg8.ocx"
 Object = "{33130918-9A80-4A1E-A420-06F4DCBA163B}#1.0#0"; "dataButton.ocx"
@@ -45,9 +45,9 @@ Begin VB.Form Form1
    Begin VB.Frame Frame6 
       Caption         =   "Planstellenzuordnung zu Betriebsabteilungen"
       Height          =   4815
-      Left            =   2460
+      Left            =   2430
       TabIndex        =   20
-      Top             =   1800
+      Top             =   1650
       Width           =   4935
       Begin R48CheckBox.R48ChkBox SSCheck1 
          Height          =   195
@@ -260,7 +260,7 @@ Begin VB.Form Form1
          BeginProperty Panel4 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
             Alignment       =   1
-            TextSave        =   "17.08.2017"
+            TextSave        =   "13.12.2018"
          EndProperty
       EndProperty
    End
@@ -771,7 +771,7 @@ Private Sub cmdAbtLtr_Click()
     Dim s$, v As Variant
     Dim MC As Object 'cR48MCTAB
     Set MC = CreateObject("R48MCArtikel.cR48MCArtikel")
-    v = MC.execute(ConstMC.MC_Personalstamm): If Not IsNull(v) Then s = v(0)
+    v = MC.Execute(ConstMC.MC_Personalstamm): If Not IsNull(v) Then s = v(0)
     Set MC = Nothing
     Form1.Refresh
     If (s <> "") Then
@@ -822,7 +822,7 @@ Private Function readAbteilungsleiter() As Boolean
     End If
 End Function
 Private Sub readABT()
-    If (0 = ABT.execute(BGETEQUAL, Text1(0))) Then
+    If (0 = ABT.Execute(BGETEQUAL, Text1(0))) Then
         recAbtEnter
         gnES = ES_EDIT
     ElseIf 4 Then
@@ -874,7 +874,7 @@ Private Sub CheckDoppelte()
                 rs.MoveNext
             End If
             rs.Close
-            If txt > "" Then msgbox me,"Die Planstelle " & arr(i, 1) & " ist auch noch folgenden Abteilungen zugeordnet: " & txt & vbCrLf & "Bitte löschen sie alle doppelten Zuordnungen!"
+            If txt > "" Then MsgBox Me, "Die Planstelle " & arr(i, 1) & " ist auch noch folgenden Abteilungen zugeordnet: " & txt & vbCrLf & "Bitte löschen sie alle doppelten Zuordnungen!"
         End If
     Next
 End Sub
@@ -987,7 +987,7 @@ End Sub
 
 Private Sub grdPS_BeforeColEdit(ByVal ColIndex As Integer, ByVal KeyAscii As Integer, Cancel As Integer)
     If arr(grdPS.Bookmark, 2) > "" And Trim(arr(grdPS.Bookmark, 2)) <> Trim(Text1(1)) Then
-        msgbox me,"Eine Planstelle kann nur einer Abteilung zugeordnet werden", vbCritical
+        MsgBox Me, "Eine Planstelle kann nur einer Abteilung zugeordnet werden", vbCritical
         Cancel = True
     End If
 End Sub
@@ -1047,7 +1047,7 @@ Private Sub mnuMainHelp_Click(index As Integer)
             dlg1.HelpContext = 50100000
             dlg1.ShowHelp
         Case 1
-            frmInfo.Exec Me, App.EXEName, PRG_VERSION
+            frmInfo.exec Me, App.EXEName, PRG_VERSION
     End Select
 End Sub
 
@@ -1200,7 +1200,7 @@ Private Function ABTSave() As Boolean
     ABT.MaxAbwMitarbeiter = Text1(3).Text
     ABT.Abteilungsleiter = Val(Text1(4).Text)
     SavePlanSt
-    If (ABT.execute(BOP) = 0) Then
+    If (ABT.Execute(BOP) = 0) Then
         SetState "Daten gespeichert"
         ABTSave = True
         readABT
@@ -1230,20 +1230,20 @@ End Sub
 
 Private Sub ABTDelete()
     If (gnES = ES_EDIT) Then
-        Select Case frmmsg.exec(me,App.Title, vbCrLf & vbCrLf & "Datensatz löschen ?", vbYesNo, nmsg_Kegel)
+        Select Case frmmsg.exec(Me, App.Title, vbCrLf & vbCrLf & "Datensatz löschen ?", vbYesNo, nmsg_Kegel)
         'Select Case msgbox(me,"Datensatz löschen ?", vbYesNo + vbExclamation)
             Case vbYes
                 If (sBetrAbt = ABT.Abteilung) Then
                     Dim rs As New ADODB.Recordset
                     rs.Open "delete from betriebsabteilung_planstellen where abteilung = '" & sBetrAbt & "'", conn_main, adOpenDynamic, adLockOptimistic
-                    If (ABT.execute(BDELETE) = 0) Then
+                    If (ABT.Execute(BDELETE) = 0) Then
                         SetState "Datensatz gelöscht"
                         gnES = ES_NONE
                         ES_set
 '                        readABT
                     End If
                 Else
-                    frmmsg.exec me,App.Title, vbCrLf & vbCrLf & "Interner Fehler. (ABTDelete: BetrAbt <> ABT.Abteilung)"
+                    frmmsg.exec Me, App.Title, vbCrLf & vbCrLf & "Interner Fehler. (ABTDelete: BetrAbt <> ABT.Abteilung)"
                     'msgbox me,"Interner Fehler. (ABTDelete: BetrAbt <> ABT.Abteilung)"
                 End If
         End Select
@@ -1289,9 +1289,9 @@ End Sub
 Private Function ABTNext(index As Boolean) As Boolean
     ABTNext = False
     If (index) Then
-        Call ABT.execute(BGETGREATER, Text1(0).Text)
+        Call ABT.Execute(BGETGREATER, Text1(0).Text)
     Else
-        Call ABT.execute(BGETLESS, Text1(0).Text)
+        Call ABT.Execute(BGETLESS, Text1(0).Text)
     End If
     If (ABT.BStatus = 0) Then
         ABTNext = True
@@ -1311,9 +1311,9 @@ End Function
 Private Function ABTFirst(index As Boolean) As Boolean
     ABTFirst = False
     If (index) Then
-        Call ABT.execute(BGETLAST)
+        Call ABT.Execute(BGETLAST)
     Else
-        Call ABT.execute(BGETFIRST)
+        Call ABT.Execute(BGETFIRST)
     End If
     If (ABT.BStatus = 0) Then
         ABTFirst = True
@@ -1363,7 +1363,7 @@ Public Function Verknuepfung_Wert(sKey$) As String
             rs2.Close
         Case Else
             If sKey > "" Then
-                frmmsg.exec me,App.Title, vbCrLf & vbCrLf & "Der Übergabewert " & sKey & " wird von disem Programm nicht unterstützt"
+                frmmsg.exec Me, App.Title, vbCrLf & vbCrLf & "Der Übergabewert " & sKey & " wird von disem Programm nicht unterstützt"
                 'msgbox me,"Der Übergabewert " & sKey & " wird von disem Programm nicht unterstützt", vbCritical
             End If
     End Select
