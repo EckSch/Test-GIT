@@ -1,6 +1,8 @@
 Attribute VB_Name = "Mmain"
 Option Explicit
 
+Das ist branch Master2
+
 Public Const FRM_CAPTION = "Betriebsabteilungen"
 '16.12.2003 BSt Ladefortschritt um Art der Anwendung (hier "Pflege") erweitert
 '               Tab- und Enterreihenfolge geändert
